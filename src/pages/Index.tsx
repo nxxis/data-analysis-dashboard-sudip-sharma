@@ -1,4 +1,3 @@
-
 // ==========================================
 // 🏠 WEEK 1: Index.tsx - Homepage Component
 // ==========================================
@@ -9,11 +8,23 @@
 import { useState } from 'react';
 
 // 🎨 Icon imports - beautiful icons for your UI
-import { Upload, BarChart3, PieChart, TrendingUp, Database } from 'lucide-react';
+import {
+  Upload,
+  BarChart3,
+  PieChart,
+  TrendingUp,
+  Database,
+} from 'lucide-react';
 
 // 🧩 UI Component imports - pre-built components for your interface
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 // 📊 Data-related imports - components that handle your data
 import DataUpload from '@/components/DataUpload';
@@ -26,7 +37,7 @@ import { DataRow } from '@/types/data';
 const Index = () => {
   // 🧠 Component State - this is your component's memory!
   // useState lets your component remember and change data
-  const [data, setData] = useState<DataRow[]>([]);      // Stores uploaded data
+  const [data, setData] = useState<DataRow[]>([]); // Stores uploaded data
   const [fileName, setFileName] = useState<string>(''); // Remembers file name
 
   // 🔄 Event Handler - function that runs when data is uploaded
@@ -47,14 +58,15 @@ const Index = () => {
               <Database className="h-12 w-12 text-white" />
             </div>
           </div>
-          
+
           {/* 📝 WEEK 1: Students customize this title with their name */}
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">
-            Plug-N-Learn
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 to-indigo-600 bg-clip-text text-transparent mb-4">
+            Sudip's Dashboard
           </h1>
           <p className="text-xl text-slate-600 mb-2">Data Insight Engine</p>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-            Upload your dataset and instantly discover insights, visualize trends, and explore your data with interactive charts and analytics.
+            Upload your dataset and instantly discover insights, visualize
+            trends, and explore your data with interactive charts and analytics.
           </p>
         </div>
 
@@ -77,7 +89,8 @@ const Index = () => {
                   </div>
                   <CardTitle className="text-xl">Easy Data Upload</CardTitle>
                   <CardDescription>
-                    Simply drag and drop your CSV files or click to browse. Support for various data formats.
+                    Simply drag and drop your CSV files or click to browse.
+                    Support for various data formats.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -90,7 +103,8 @@ const Index = () => {
                   </div>
                   <CardTitle className="text-xl">Interactive Charts</CardTitle>
                   <CardDescription>
-                    Automatically generate bar charts, line graphs, pie charts, and more from your data.
+                    Automatically generate bar charts, line graphs, pie charts,
+                    and more from your data.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -103,7 +117,8 @@ const Index = () => {
                   </div>
                   <CardTitle className="text-xl">Smart Insights</CardTitle>
                   <CardDescription>
-                    Discover patterns, trends, and statistical insights automatically generated from your dataset.
+                    Discover patterns, trends, and statistical insights
+                    automatically generated from your dataset.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -124,10 +139,14 @@ const Index = () => {
           </>
         ) : (
           <>
-            <Dashboard data={data} fileName={fileName} onReset={() => {
-              setData([]);
-              setFileName('');
-            }} />
+            <Dashboard
+              data={data}
+              fileName={fileName}
+              onReset={() => {
+                setData([]);
+                setFileName('');
+              }}
+            />
           </>
         )}
       </div>
