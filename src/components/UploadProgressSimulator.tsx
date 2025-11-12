@@ -13,37 +13,63 @@ const UploadProgressSimulator = () => {
 
   // 🔄 Event handler functions - what happens when buttons are clicked
   const startUpload = () => {
-    // TODO: Implement upload simulation
-    // HINT: You'll need to use setInterval to animate the progress
+    setIsUploading(true);
+    setProgress(0);
+
+    // Simulate upload progress with intervals
+    const interval = setInterval(() => {
+      setProgress(prevProgress => {
+        const newProgress = prevProgress + Math.random() * 15 + 5; // Random chunks
+
+        // Complete upload when we reach 100%
+        if (newProgress >= 100) {
+          clearInterval(interval);
+          setIsUploading(false);
+          return 100;
+        }
+
+        return newProgress;
+      });
+    }, 300); // Update every 300ms for smooth animation
   };
 
   const resetProgress = () => {
-    // TODO: Reset progress back to 0
+    setProgress(0);
+    setIsUploading(false);
   };
 
   const addProgress = () => {
-    // TODO: Add 25% to current progress
+    //TODO: Add 25% to current progress
+    // Add 25% to current progress, clamp at 100
+    setProgress(prev => {
+      const next = Math.min(prev + 25, 100);
+      if (next >= 100) setIsUploading(false);
+      return next;
+    });
   };
 
   return (
     <div className="progress-container p-6 bg-white rounded-lg shadow-md max-w-md mx-auto">
-      <h2 className="text-2xl font-bold text-center mb-6">File Upload Simulator</h2>
-      
+      <h2 className="text-2xl font-bold text-center mb-6">Week 2 Progression</h2>
       {/* 📊 Progress Bar */}
       <div className="mb-4">
         <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <div 
             className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-300 ease-out"
-            style={{ width: `${progress}%` }}
+            //style - {{width: '${progress%'}}}  <-- previous, needed to add the Math Class
+            style={{ width: `${Math.min(progress, 100)}%` }}
           />
         </div>
       </div>
 
       {/* 📈 Progress Display */}
       <div className="text-center mb-6">
-        <span className="text-3xl font-bold text-blue-600">{progress}%</span>
+        <span className="text-3xl font-bold text-blue-600">{Math.round(progress)}%</span>
         <div className="text-sm text-gray-600 mt-2">
-          {/* TODO: Add status messages based on progress and upload state */}
+          {/*TODO:Add status messages based on progress and upload state */}
+          {progress === 0 && !isUploading && 'Ready to start!'}
+          {isUploading && progress > 0 && progress < 100 && 'Uploading...'}
+          {progress >= 100 && 'Upload complete!'}
         </div>
       </div>
 
@@ -51,20 +77,22 @@ const UploadProgressSimulator = () => {
       <div className="flex justify-center gap-3">
         <button 
           onClick={startUpload}
-          disabled={isUploading || progress === 100}
+          //disabled = {isUploading || progress === 100}  <-- previous, needed to add the Math Class
+          disabled={isUploading || Math.round(progress) === 100}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors disabled:bg-gray-400"
         >
           {isUploading ? 'Uploading...' : 'Start Upload'}
         </button>
-        
+
         <button 
           onClick={addProgress}
-          disabled={isUploading || progress >= 100}
+          //disabled = {isUploading || progress >= 100} <-- previous, needed to add the Math Class
+          disabled={isUploading || Math.round(progress) >= 100}
           className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors disabled:bg-gray-400"
         >
           +25%
         </button>
-        
+
         <button 
           onClick={resetProgress}
           disabled={isUploading}

@@ -2,7 +2,11 @@
 import { TrendingUp, AlertTriangle, BarChart3, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DataInsight } from '@/types/data';
+import { DataInsight, DataRow } from '@/types/data';
+import { Button } from './ui/button';
+import {useState} from "react";
+import ReactMarkdown from 'react-markdown';
+
 
 // 📊 Week 4-5: Smart Data Insights - Bringing Your Data to Life
 // Students - Transform raw data into meaningful stories! This component showcases professional data presentation patterns.
@@ -14,13 +18,19 @@ import { DataInsight } from '@/types/data';
 // - Create engaging, accessible user interfaces
 // - Master conditional rendering and dynamic styling
 // - Present complex information clearly and beautifully
-
 interface InsightsPanelProps {
+  data: DataRow[];
   insights: DataInsight[];
   showAll?: boolean;
 }
 
-const InsightsPanel = ({ insights, showAll = false }: InsightsPanelProps) => {
+
+interface InsightsPanelProps {
+  data: DataRow[];
+  insights: DataInsight[];
+  showAll?: boolean;
+}
+const InsightsPanel = ({ data, insights, showAll = false }: InsightsPanelProps) => {
   // 🟢 EASY - Week 3: Icon Mapping Function
   // TODO: Students - Understand switch statements and icon libraries
   // 
@@ -76,6 +86,77 @@ const InsightsPanel = ({ insights, showAll = false }: InsightsPanelProps) => {
     }
     // TODO: Week 4 - Make colors configurable or theme-aware
   };
+  const [isLoading, setIsLoading] = useState(false);
+  const [aiInsight, setAiInsight] = useState<string>('');
+
+  const handleGenerateInsight = () => {
+    console.log('🚀 Button clicked! Starting to generate insight...');
+    console.log('Data length:', data.length);
+    
+    setIsLoading(true);
+
+    const dataSummary = {
+      rowCount: data.length,
+      columns: Object.keys(data[0] || {}),
+      sampleData: data.slice(0, 10), // Only send first 10 rows
+      statistics: Object.keys(data[0] || {}).reduce((acc, key) => {
+      const values = data.map(row => row[key]);
+      const numericValues = values.filter(v => typeof v === 'number');
+      
+      if (numericValues.length > 0) {
+        acc[key] = {
+          min: Math.min(...numericValues),
+          max: Math.max(...numericValues),
+          avg: numericValues.reduce((a, b) => a + b, 0) / numericValues.length
+        };
+      }
+      return acc;
+    }, {})
+  };
+
+    const prompt = `Generate insights for the following dataset:
+    
+  Dataset Summary:
+  - Total Rows: ${dataSummary.rowCount}
+  - Columns: ${dataSummary.columns.join(', ')}
+  - Sample Data: ${JSON.stringify(dataSummary.sampleData, null, 2)}
+  - Statistics: ${JSON.stringify(dataSummary.statistics, null, 2)}
+  
+  Please provide actionable insights about trends, patterns, or notable findings in the data`;
+    
+    fetch('http://localhost:4000/insight', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    })
+    .then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+    })
+
+    .then(responseData => {
+      console.log('Full AI Response:', responseData);
+      console.log('Insight text:', responseData.insight);
+      console.log('Type of insight:', typeof responseData.insight);
+      
+      if (responseData.insight) {
+        setAiInsight(responseData.insight);
+        console.log('✅ Insight set successfully!');
+      } else {
+        console.error('❌ No insight in response');
+      }
+    })
+
+    .catch(err => {
+      console.error('Error generating insight:',err);
+      setAiInsight('Failed to generate insight. Please try again.');
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+};
 
   // 🟢 EASY - Week 3: Empty State Handling
   // TODO: Students - Always handle empty states gracefully
@@ -108,6 +189,7 @@ const InsightsPanel = ({ insights, showAll = false }: InsightsPanelProps) => {
       </Card>
     );
   }
+  
 
   return (
     <Card>
@@ -120,6 +202,20 @@ const InsightsPanel = ({ insights, showAll = false }: InsightsPanelProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        <Button onClick={handleGenerateInsight} disabled={isLoading}> 
+          {isLoading ? 'Generating Insight...' : 'Generate AI Insight'}
+          
+        </Button>
+        {aiInsight && (
+            <div className="my-4 border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+              <h4 className="font-medium text-gray-900 mb-1">AI Insight</h4>
+              <div className="text-sm text-gray-600 prose prose-sm max-w-none">
+                <ReactMarkdown>
+                  {aiInsight}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
         <div className="space-y-4">
           {/* 🟡 MEDIUM - Week 4: Dynamic List Rendering */}
           {/* TODO: Students - Understand array mapping and complex layouts */}
